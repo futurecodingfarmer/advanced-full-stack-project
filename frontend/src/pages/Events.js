@@ -1,28 +1,44 @@
-import { Link } from "react-router-dom";
+// new hook - useLoaderData to get the closest loader data
+import { useLoaderData } from 'react-router-dom';
+import EventsList from '../components/EventsList';
 
-const DUMMY_EVENTS = [
-    {id:'e1', title:'Leather Night'},
-    {id:'e2', title:'Rubber Night'},
-    {id:'e3', title:'Daddy Night'},
-    {id:'e4', title:'Shower Show'},
-];
+function EventsPage() {
+  const data = useLoaderData();
+  if(data.isError === true){
+    return <p>{events.message}</p>;
+  };
+
+  const events = data.events;
+  return (
+    <>
+      <EventsList events={events} />
+    </>
+  );
+}
+
+export async function loader() {
+    const response = await fetch('http://localhost:8080/eventsss');
+  
+    if (!response.ok) {
+      // return { isError: true, message: 'Could not fetch events.' };
+      throw new Response(JSON.stringify({ message: 'Could not fetch events.' }), {
+        status: 500,
+      });
+    } else {
+      return response;
+    }
+  };
 
 
-const EventsPage = () => {
-
-    return <>
-    <main>
-       <p>EVENT LISTS BELOW</p>
-       <ul>
-       {DUMMY_EVENTS.map(event => 
-           <li key={event.id}>
-          <Link to={event.id}>{event.title}</Link>
-        </li>
-       )} 
-       </ul>
-    </main>
-    </>;
-
-};
+// export const loader = async () => {
+//   const response = await fetch("http://localhost:8080/eventsss");
+//   if (!response.ok) {
+//     throw new Response(JSON.stringify({message:'Could not fetch events!'}),{
+//         status: 500
+//     });
+//   } else {
+//     return response;
+//   }
+// };
 
 export default EventsPage;
